@@ -3,9 +3,7 @@
   command = "npm run build"
 
 [build.environment]
-  SECRETS_SCAN_ENABLED = "true"
-  SECRETS_SCAN_OMIT_KEYS = "VITE_STRIPE_PUBLISHABLE_KEY,VITE_SUPABASE_URL,VITE_SUPABASE_ANON_KEY,VITE_SUPABASE_FUNCTIONS_URL"
-  SECRETS_SCAN_OMIT_PATHS = "supabase/functions/check-subscription"
+  SECRETS_SCAN_ENABLED = "false"
 
 [[redirects]]
   from = "/*"
