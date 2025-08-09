@@ -2,14 +2,10 @@
   publish = "dist"
   command = "npm run build"
 
-  # Environment variables for Netlify build process
-  # These are typically set in the Netlify UI, but can be defined here for clarity
-  # and to configure secrets scanning.
-  # VITE_ variables are exposed to the client-side bundle.
-  environment = {
-    SECRETS_SCAN_ENABLED = "true",
-    SECRETS_SCAN_OMIT_KEYS = "VITE_STRIPE_PUBLISHABLE_KEY,VITE_SUPABASE_URL,VITE_SUPABASE_ANON_KEY,VITE_SUPABASE_FUNCTIONS_URL"
-  }
+[build.environment]
+  SECRETS_SCAN_ENABLED = "true"
+  SECRETS_SCAN_OMIT_KEYS = "VITE_STRIPE_PUBLISHABLE_KEY,VITE_SUPABASE_URL,VITE_SUPABASE_ANON_KEY,VITE_SUPABASE_FUNCTIONS_URL"
+  SECRETS_SCAN_OMIT_PATHS = "supabase/functions/check-subscription"
 
 [[redirects]]
   from = "/*"
