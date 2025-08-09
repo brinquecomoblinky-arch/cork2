@@ -32,15 +32,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     let mounted = true
 
-    // Get initial session
     const getInitialSession = async () => {
       try {
         const { data: { session }, error } = await supabase.auth.getSession()
-        
-        if (error) {
-          console.error('Erro ao obter sessão:', error)
-        }
-        
+        if (error) console.error('Erro ao obter sessão:', error)
+
         if (mounted) {
           setSession(session)
           setUser(session?.user ?? null)
@@ -48,18 +44,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       } catch (error) {
         console.error('Erro inesperado ao obter sessão:', error)
-        if (mounted) {
-          setLoading(false)
-        }
+        if (mounted) setLoading(false)
       }
     }
 
     getInitialSession()
 
-    // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       if (mounted) {
         setSession(session)
         setUser(session?.user ?? null)
@@ -79,34 +72,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return
     }
 
-    const supabaseFunctionsUrl = import.meta.env.VITE_SUPABASE_FUNCTIONS_URL;
+    const supabaseFunctionsUrl = import.meta.env.VITE_SUPABASE_FUNCTIONS_URL
     if (!supabaseFunctionsUrl) {
-      console.error('VITE_SUPABASE_FUNCTIONS_URL is not defined. Cannot check subscription.');
-      setHasActiveSubscription(false);
-      return;
+      console.error('VITE_SUPABASE_FUNCTIONS_URL is not defined.')
+      setHasActiveSubscription(false)
+      return
     }
 
-   try {
-  // Call your backend API to check subscription status
-  const response = await fetch(`${supabaseFunctionsUrl}/check-subscription`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`
-    },
-    body: JSON.stringify({ email: user.email }),
-  })
-
-  if (response.ok) {
-    const data = await response.json()
-    setHasActiveSubscription(data.hasActiveSubscription)
-  } else {
-    setHasActiveSubscription(false)
-  }
-} catch (error) {
-  console.error('Erro ao verificar assinatura:', error)
-  setHasActiveSubscription(false)
-}
+    try {
+      const response = await fetch(`${supabaseFunctionsUrl}/check-subscription`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`
+        },
+        body: JSON.stringify({ email: user.email }),
+      })
 
       if (response.ok) {
         const data = await response.json()
@@ -120,7 +101,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }
 
-  // Check subscription when user changes
   useEffect(() => {
     if (user) {
       checkSubscription()
@@ -134,9 +114,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return await supabase.auth.signUp({
         email,
         password,
-        options: {
-          emailRedirectTo: undefined
-        }
+        options: { emailRedirectTo: undefined }
       })
     } catch (error) {
       console.error('Erro no cadastro:', error)
@@ -146,10 +124,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signIn = async (email: string, password: string) => {
     try {
-      return await supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
+      return await supabase.auth.signInWithPassword({ email, password })
     } catch (error) {
       console.error('Erro no login:', error)
       throw error
