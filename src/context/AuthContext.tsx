@@ -86,15 +86,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return;
     }
 
-    try {
-      // Call your backend API to check subscription status
-      const response = await fetch(`${supabaseFunctionsUrl}/check-subscription`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email: user.email }),
-      })
+   try {
+  // Call your backend API to check subscription status
+  const response = await fetch(`${supabaseFunctionsUrl}/check-subscription`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`
+    },
+    body: JSON.stringify({ email: user.email }),
+  })
+
+  if (response.ok) {
+    const data = await response.json()
+    setHasActiveSubscription(data.hasActiveSubscription)
+  } else {
+    setHasActiveSubscription(false)
+  }
+} catch (error) {
+  console.error('Erro ao verificar assinatura:', error)
+  setHasActiveSubscription(false)
+}
 
       if (response.ok) {
         const data = await response.json()
